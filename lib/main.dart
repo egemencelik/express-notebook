@@ -1,5 +1,7 @@
+import 'package:express_notebook/widgets/notecard.dart';
 import 'package:flutter/material.dart';
-import 'package:moor_flutter/moor_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
 
 import 'db/database.dart';
@@ -7,6 +9,8 @@ import 'db/database.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  static Color color = Colors.black;
+  static DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm");
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -17,9 +21,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Express Notebook',
-        theme: ThemeData(
-          primarySwatch: Colors.amber,
-        ),
+        theme: ThemeData(primaryColor: color),
         home: MyHomePage(title: 'Express Notebook'),
       ),
     );
@@ -36,13 +38,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
+  void _addNote() {
     setState(() {
       final database = Provider.of<MyDatabase>(context);
       database.addNote(NotesCompanion(
-          title: Value("asdddddd"), category: Value(2), content: Value("sss")));
+          title: moor.Value("asdddddd"),
+          category: moor.Value(2),
+          content: moor.Value("sss"),
+          date: moor.Value(DateTime.now())));
     });
   }
 
@@ -61,69 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
             return ListView.builder(
                 itemCount: list.length,
                 itemBuilder: (ctx, index) {
-                  return Dismissible(
-                    child: Hero(
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          height: 50.0,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return new NotePage(note: list[index]);
-                                  },
-                                  fullscreenDialog: true,
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: <Widget>[
-                                Text(list.elementAt(index).title),
-                                Text(list.elementAt(index).id.toString()),
-                                Text(list.elementAt(index).content),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      tag: list[index].id,
-                    ),
-                    key: Key(list[index].id.toString()),
-                    background:
-                        Container(alignment: AlignmentDirectional.centerEnd),
-                    onDismissed: (direction) {
-                      setState(() async {
-                        database.deleteNote(list[index].id);
-                      });
-                    },
-                    direction: DismissDirection.horizontal,
-                    confirmDismiss: (DismissDirection direction) async {
-                      final bool res = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Confirm"),
-                            content: const Text(
-                                "Are you sure you wish to delete this note?"),
-                            actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
-                                  child: const Text("DELETE")),
-                              FlatButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: const Text("CANCEL"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      return res;
-                    },
+                  return NoteCard(
+                    note: list[index],
+                    database: database,
                   );
                 });
           } else {
@@ -132,46 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _addNote,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
     );
-  }
-
-  void _delete() {
-    setState(() {
-      final database = Provider.of<MyDatabase>(context);
-      database.deleteAllNotes();
-    });
-  }
-}
-
-class NotePage extends StatelessWidget {
-  final Note note;
-
-  const NotePage({Key key, this.note}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Hero(
-        tag: note.id,
-        child: Material(
-            child: Center(
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Container(
-              height: 50,
-              width: 50,
-              color: Colors.white,
-              child: Text(note.id.toString()),
-            ),
-          ),
-        )),
-      ),
-    ]);
   }
 }

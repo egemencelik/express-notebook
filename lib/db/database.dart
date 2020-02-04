@@ -26,7 +26,16 @@ class MyDatabase extends _$MyDatabase {
         ));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2; // bump because the tables have changed
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
+        return m.createAll();
+      }, onUpgrade: (Migrator m, int from, int to) async {
+        // we added the dueDate property in the change from version 1
+        await m.deleteTable("notes");
+        await m.createAll();
+      });
 
   //Queries
 
