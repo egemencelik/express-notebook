@@ -32,71 +32,65 @@ class _NoteCardState extends State<NoteCard> {
           height: height,
           child: Column(
             children: <Widget>[
-              Container(
-                height: 30,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    IconButton(
-                      alignment: Alignment.bottomLeft,
-                      icon: setArrowIcon(expanded),
-                      onPressed: () {
-                        setState(() {
-                          if (expanded) {
-                            height = 80;
-                            expanded = false;
-                          } else {
-                            height = 180;
-                            expanded = true;
-                          }
-                        });
-                      },
-                    ),
-                    Text(
-                      widget.note.title,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(MyApp.dateFormat.format(widget.note.date)),
-                    IconButton(
-                      iconSize: 17,
-                      alignment: Alignment.topCenter,
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          if (expanded) {
-                            height = 80;
-                            expanded = false;
-                          } else {
-                            height = 180;
-                            expanded = true;
-                          }
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                color: Colors.amber,
-              ),
-              InkWell(
+              GestureDetector(
                 onTap: () {
                   setState(() {
                     if (expanded) {
                       height = 80;
                       expanded = false;
                     } else {
-                      height = 180;
+                      height = calculateHeight(widget.note.content);
                       expanded = true;
                     }
                   });
                 },
-                child: Row(
-                  children: <Widget>[
-                    Text(widget.note.title),
-                    Text(widget.note.id.toString()),
-                    Text(widget.note.content),
-                  ],
+                child: Container(
+                  color: getCategoryColor(widget.note.category),
+                  height: 30,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      setArrowIcon(expanded),
+                      Text(
+                        widget.note.title,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(MyApp.dateFormat.format(widget.note.date)),
+                      IconButton(
+                        iconSize: 17,
+                        alignment: Alignment.topCenter,
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          setState(() {
+                            if (expanded) {
+                              height = 80;
+                              expanded = false;
+                            } else {
+                              height = 280;
+                              expanded = true;
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              Row(
+                children: <Widget>[
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.note.content,
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -134,6 +128,23 @@ class _NoteCardState extends State<NoteCard> {
   }
 }
 
+double calculateHeight(String text) {
+  double multFactor;
+  double divFactor;
+
+  if (text.length > 1000) {
+    multFactor = 2.95;
+    divFactor = 9.2;
+  } else {
+    multFactor = 3;
+    divFactor = 8;
+  }
+
+  double newLength = (text.length * multFactor) / divFactor;
+
+  return newLength < 80 ? 80 : newLength;
+}
+
 Widget setArrowIcon(bool isExpanded) {
   Icon icon;
 
@@ -143,4 +154,33 @@ Widget setArrowIcon(bool isExpanded) {
     icon = Icon(Icons.arrow_drop_down);
   }
   return icon;
+}
+
+Color getCategoryColor(int id) {
+  Color color;
+  switch (id) {
+    case 0:
+      color = Colors.amber;
+      break;
+    case 1:
+      color = Colors.lightBlue;
+      break;
+    case 2:
+      color = Colors.lightGreen;
+      break;
+    case 3:
+      color = new Color(0xffFF7043);
+      break;
+    case 4:
+      color = new Color(0xffF48FB1);
+      break;
+    case 5:
+      color = new Color(0xffCE93D8);
+      break;
+
+    default:
+      color = Colors.lime;
+  }
+
+  return color;
 }

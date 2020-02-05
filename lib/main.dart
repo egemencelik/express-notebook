@@ -1,3 +1,4 @@
+import 'package:express_notebook/widgets/newnotepage.dart';
 import 'package:express_notebook/widgets/notecard.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Express Notebook',
-        theme: ThemeData(primaryColor: color),
+        theme: ThemeData(primaryColor: color, buttonColor: Colors.amber),
         home: MyHomePage(title: 'Express Notebook'),
       ),
     );
@@ -43,9 +44,15 @@ class _MyHomePageState extends State<MyHomePage> {
       final database = Provider.of<MyDatabase>(context);
       database.addNote(NotesCompanion(
           title: moor.Value("asdddddd"),
-          category: moor.Value(2),
+          category: moor.Value(6),
           content: moor.Value("sss"),
           date: moor.Value(DateTime.now())));
+    });
+  }
+
+  void _addNewNote() {
+    setState(() {
+      final database = Provider.of<MyDatabase>(context);
     });
   }
 
@@ -54,6 +61,27 @@ class _MyHomePageState extends State<MyHomePage> {
     final database = Provider.of<MyDatabase>(context);
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.amber),
+        actions: <Widget>[
+          Hero(
+            tag: 'add_note',
+            child: MaterialButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) {
+                          return new NewNotePage();
+                        },
+                        fullscreenDialog: true));
+              },
+              child: Icon(
+                Icons.note_add,
+                color: Colors.white,
+              ),
+            ),
+          )
+        ],
         title: Text(widget.title),
       ),
       body: StreamBuilder(
@@ -73,11 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
             return Container();
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addNote,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
