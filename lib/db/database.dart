@@ -26,7 +26,7 @@ class MyDatabase extends _$MyDatabase {
         ));
 
   @override
-  int get schemaVersion => 2; // bump because the tables have changed
+  int get schemaVersion => 6; // bump because the tables have changed
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -39,7 +39,11 @@ class MyDatabase extends _$MyDatabase {
 
   //Queries
 
-  Stream<List<Note>> getAllNotes() => select(notes).watch();
+  Stream<List<Note>> getAllNotes() => (select(notes)
+        ..orderBy([
+          (note) => OrderingTerm(expression: note.date, mode: OrderingMode.desc)
+        ]))
+      .watch();
 
   Future addNote(NotesCompanion note) => into(notes).insert(note);
 
@@ -48,7 +52,7 @@ class MyDatabase extends _$MyDatabase {
   Future deleteNote(int id) =>
       (delete(notes)..where((note) => note.id.equals(id))).go();
 
-  Future updateNote(NotesCompanion note) => update(notes).replace(note);
+  Future updateNote(Note note) => update(notes).replace(note);
 
   Stream<List<Note>> getNotesByCategory(int id) =>
       (select(notes)..where((note) => note.category.equals(id))).watch();

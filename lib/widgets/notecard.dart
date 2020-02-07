@@ -57,21 +57,25 @@ class _NoteCardState extends State<NoteCard> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(MyApp.dateFormat.format(widget.note.date)),
-                      IconButton(
-                        iconSize: 17,
-                        alignment: Alignment.topCenter,
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          setState(() {
-                            if (expanded) {
-                              height = 80;
-                              expanded = false;
-                            } else {
-                              height = 280;
-                              expanded = true;
-                            }
-                          });
-                        },
+                      Hero(
+                        tag: 'edit_note' + widget.note.id.toString(),
+                        child: MaterialButton(
+                          child: Icon(
+                            Icons.edit,
+                            size: 17,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) {
+                                      return new NotePage(
+                                        note: widget.note,
+                                      );
+                                    },
+                                    fullscreenDialog: true));
+                          },
+                        ),
                       ),
                     ],
                   ),
