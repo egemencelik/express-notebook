@@ -87,6 +87,8 @@ class _NotePageState extends State<NotePage> {
               child: ButtonTheme(
                 minWidth: double.infinity,
                 child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   elevation: 10.0,
                   padding: const EdgeInsets.all(10.0),
                   color: getCategoryColor(category),

@@ -57,11 +57,11 @@ class MyDatabase extends _$MyDatabase {
   Stream<List<Note>> getNotesByCategory(int id) =>
       (select(notes)..where((note) => note.category.equals(id))).watch();
 
-  Future<List<Note>> searchByTitle(String stringToSearch) =>
+  Stream<List<Note>> searchByTitle(String stringToSearch) =>
       (select(notes)..where((note) => note.title.like("%$stringToSearch%")))
-          .get();
+          .watch();
 
-  Future<List<Note>> searchByContent(String stringToSearch) =>
+  Stream<List<Note>> searchByContent(String stringToSearch) =>
       (select(notes)..where((note) => note.content.like("%$stringToSearch%")))
-          .get();
+          .watch();
 }

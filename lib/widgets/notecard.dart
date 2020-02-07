@@ -27,7 +27,8 @@ class _NoteCardState extends State<NoteCard> {
   Widget build(BuildContext context) {
     return Dismissible(
       child: Card(
-        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 8,
         child: AnimatedContainer(
           height: height,
           child: Column(
@@ -45,7 +46,12 @@ class _NoteCardState extends State<NoteCard> {
                   });
                 },
                 child: Container(
-                  color: getCategoryColor(widget.note.category),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                    color: getCategoryColor(widget.note.category),
+                  ),
                   height: 30,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,7 +189,7 @@ Color getCategoryColor(int id) {
       break;
 
     default:
-      color = Colors.lime;
+      color = Colors.grey;
   }
 
   return color;
