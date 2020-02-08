@@ -7,18 +7,42 @@ import 'package:intl/intl.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:express_notebook/helpers/colorhelper.dart';
 import 'package:provider/provider.dart';
+import 'package:after_init/after_init.dart';
 
 import 'db/database.dart';
 
 void main() => runApp(MyApp());
 
+class NoteStream extends ChangeNotifier {
+  Stream stream;
+  int index = -1;
+  bool isColorSelected = false;
+
+  void updateStream(Stream newStream) {
+    stream = newStream;
+    notifyListeners();
+  }
+
+  void updateIndex(int value) {
+    index = value;
+    notifyListeners();
+  }
+
+  void updateIsColorSelected(bool value) {
+    isColorSelected = value;
+    notifyListeners();
+  }
+}
+
 class MyApp extends StatelessWidget {
-  static Color color = Colors.black;
   static DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm");
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<NoteStream>(
+          create: (_) => NoteStream(),
+        ),
         Provider<MyDatabase>(
           create: (_) => MyDatabase(),
         ),
@@ -36,57 +60,29 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   static Stream stream;
+  static final streamBuilderKey = GlobalKey<State<StreamBuilderBase>>();
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  static final refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+class _MyHomePageState extends State<MyHomePage>
+    with AfterInitMixin<MyHomePage> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  void didInitState() {
     final database = Provider.of<MyDatabase>(context);
-    MyHomePage.stream = database.getAllNotes();
+    Provider.of<NoteStream>(context).updateStream(database.getAllNotes());
   }
+
+  static final refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<MyDatabase>(context);
     return Scaffold(
       appBar: CustomAppBar(),
-      /* AppBar(
-        backgroundColor: Colors.transparent,
-        actions: <Widget>[
-          Hero(
-            tag: 'add_note',
-            child: MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) {
-                          return new NewNotePage();
-                        },
-                        fullscreenDialog: true));
-              },
-              child: Icon(
-                Icons.note_add,
-                color: Colors.black,
-              ),
-            ),
-          )
-        ],
-        title: Text(
-          widget.title,
-          style: TextStyle(color: Colors.black),
-        ),
-        elevation: 0,
-      ), */
       body: StreamBuilder(
-        stream: CustomAppBar.isColorSelected
-            ? database.getNotesByCategory(CustomAppBar.selectedIndex)
-            : database.getAllNotes(),
+        key: MyHomePage.streamBuilderKey,
+        stream: Provider.of<NoteStream>(context).stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Note> list = snapshot.data;
@@ -103,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
             );
           } else {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }
         },
       ),
@@ -113,10 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _handleRefresh() async {
     await new Future.delayed(new Duration(seconds: 0));
 
-    setState(() {
-      MyHomePage.stream = CustomAppBar.newStream;
-    });
-
     return null;
   }
 }
@@ -124,11 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
-
-  static bool isColorSelected = false;
-  static int selectedIndex = -1;
-  static Stream newStream;
-  Color selectedColor = getCategoryColor(selectedIndex);
 
   @override
   Size get preferredSize => Size.fromHeight(50);
@@ -138,6 +125,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<MyDatabase>(context);
+    final streamP = Provider.of<NoteStream>(context);
     return PreferredSize(
       preferredSize: Size.fromHeight(50),
       child: Container(
@@ -154,19 +142,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
             PopupMenuButton(
               onSelected: (choice) {
                 setState(() {
-                  widget.selectedColor = getCategoryColor(choice);
                   if (choice == -1) {
-                    CustomAppBar.isColorSelected = false;
-                    CustomAppBar.newStream = database.getAllNotes();
+                    streamP.updateIsColorSelected(false);
+                    streamP.updateStream(database.getAllNotes());
                   } else {
-                    CustomAppBar.isColorSelected = true;
-                    CustomAppBar.newStream =
-                        database.getNotesByCategory(choice);
+                    streamP.updateIsColorSelected(true);
+                    streamP.updateStream(database.getNotesByCategory(choice));
                   }
 
-                  CustomAppBar.selectedIndex = choice;
-
-                  _MyHomePageState.refreshIndicatorKey.currentState.show();
+                  streamP.updateIndex(choice);
                 });
               },
               shape: RoundedRectangleBorder(
@@ -176,7 +160,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 height: 30,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: widget.selectedColor,
+                  color: getCategoryColor(streamP.index),
                 ),
                 child: Icon(
                   Icons.color_lens,
@@ -214,35 +198,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 }).toList();
               },
             ),
-            /* RawMaterialButton(
-              enableFeedback: false,
-              constraints: BoxConstraints.tight(Size.fromRadius(14)),
-              shape: new CircleBorder(),
-              elevation: 2.0,
-              onPressed: () {
-                setState(() {
-                  if (widget.isColorSelected)
-                    widget.isColorSelected = false;
-                  else
-                    widget.isColorSelected = true;
-                });
-              },
-              fillColor: widget.isColorSelected ? Colors.amber : null,
-              child: !widget.isColorSelected
-                  ? Ink(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          //shape: new CircleBorder(),
-                          gradient: LinearGradient(
-                              colors: [
-                                new Color(0xffE0E0E0),
-                                new Color(0xff424242)
-                              ],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight)),
-                    )
-                  : null,
-            ), */
             Padding(
               padding: const EdgeInsets.fromLTRB(14.0, 8.0, 8.0, 8.0),
               child: Text(
@@ -282,14 +237,5 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ),
     );
-  }
-}
-
-Stream<List<Note>> getNoteStream(context) {
-  final database = Provider.of<MyDatabase>(context);
-  setState() {
-    return CustomAppBar.isColorSelected
-        ? database.getNotesByCategory(CustomAppBar.selectedIndex)
-        : database.getAllNotes();
   }
 }

@@ -77,9 +77,6 @@ class _NotePageState extends State<NotePage> {
               ],
             ),
           ),
-          /* Expanded(
-            child: Container(),
-          ), */
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             child: Hero(
