@@ -55,32 +55,78 @@ class _NoteCardState extends State<NoteCard> {
                   height: 30,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      setArrowIcon(expanded),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                        child: Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color:
+                                    expanded ? Colors.white : Colors.white60),
+                            child: setArrowIcon(expanded)),
+                      ),
+                      /* SizedBox(
+                        width: 20,
+                      ), */
+                      Spacer(),
                       Text(
                         widget.note.title,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            shadows: <Shadow>[
+                              Shadow(
+                                offset: Offset(0.0, 0.0),
+                                blurRadius: 5.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              ),
+                              Shadow(
+                                offset: Offset(0.0, 0.0),
+                                blurRadius: 8.0,
+                                color: Color.fromARGB(125, 0, 0, 255),
+                              ),
+                            ],
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
                       ),
-                      Text(MyApp.dateFormat.format(widget.note.date)),
-                      Hero(
-                        tag: 'edit_note' + widget.note.id.toString(),
-                        child: MaterialButton(
-                          child: Icon(
-                            Icons.edit,
-                            size: 17,
+                      Spacer(),
+
+                      /* Text(MyApp.dateFormat.format(widget.note.date)), */
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                        child: Container(
+                          width: 25,
+                          height: 25,
+                          child: Hero(
+                            tag: 'edit_note' + widget.note.id.toString(),
+                            child: MaterialButton(
+                              padding: EdgeInsets.all(0),
+                              child: Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white60),
+                                child: Icon(
+                                  Icons.edit,
+                                  size: 17,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) {
+                                          return new NotePage(
+                                            note: widget.note,
+                                          );
+                                        },
+                                        fullscreenDialog: true));
+                              },
+                            ),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) {
-                                      return new NotePage(
-                                        note: widget.note,
-                                      );
-                                    },
-                                    fullscreenDialog: true));
-                          },
                         ),
                       ),
                     ],
@@ -170,26 +216,26 @@ Color getCategoryColor(int id) {
   Color color;
   switch (id) {
     case 0:
-      color = Colors.amber;
+      color = Colors.amber[600];
       break;
     case 1:
-      color = Colors.lightBlue;
+      color = Colors.lightBlue[700];
       break;
     case 2:
-      color = Colors.lightGreen;
+      color = Colors.lightGreen[700];
       break;
     case 3:
       color = new Color(0xffFF7043);
       break;
     case 4:
-      color = new Color(0xffF48FB1);
+      color = new Color(0xffEC407A);
       break;
     case 5:
-      color = new Color(0xffCE93D8);
+      color = new Color(0xff7E57C2);
       break;
 
     default:
-      color = Colors.grey;
+      color = Colors.black;
   }
 
   return color;

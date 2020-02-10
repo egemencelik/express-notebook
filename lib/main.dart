@@ -156,8 +156,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
               child: Container(
-                width: 30,
-                height: 30,
+                width: 25,
+                height: 25,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   color: getCategoryColor(streamP.index),
@@ -165,7 +165,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 child: Icon(
                   Icons.color_lens,
                   color: Colors.white,
-                  size: 18,
+                  size: 15,
                 ),
               ),
               itemBuilder: (context) {

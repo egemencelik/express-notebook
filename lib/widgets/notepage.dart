@@ -7,6 +7,8 @@ import 'package:express_notebook/widgets/notepage.dart';
 
 import 'package:express_notebook/db/database.dart';
 
+import '../main.dart';
+
 class NotePage extends StatefulWidget {
   NotePage({Key key, @required this.note}) : super(key: key) {
     category = note.category;
@@ -41,7 +43,7 @@ class _NotePageState extends State<NotePage> {
           IconButton(
             color: getCategoryColor(category),
             enableFeedback: false,
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+            padding: EdgeInsets.fromLTRB(20, 8, 0, 8),
             icon: Icon(Icons.color_lens),
             onPressed: () {
               setState(() {
@@ -50,6 +52,13 @@ class _NotePageState extends State<NotePage> {
                 category = widget.category;
               });
             },
+          ),
+          IconButton(
+            color: getCategoryColor(category),
+            enableFeedback: false,
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+            icon: Icon(Icons.delete),
+            onPressed: _deleteNote,
           )
         ],
         backgroundColor: Colors.transparent,
@@ -62,6 +71,23 @@ class _NotePageState extends State<NotePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
+          Container(
+            height: 30,
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 22, 0),
+                  child: Text(
+                    'Last updated: ' +
+                        MyApp.dateFormat.format(widget.note.date),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
           Expanded(
             child: ListView(
               shrinkWrap: true,
@@ -110,5 +136,35 @@ class _NotePageState extends State<NotePage> {
         ],
       ),
     );
+  }
+
+  void _deleteNote() {
+    final database = Provider.of<MyDatabase>(context);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            title: Text(
+              "Confirm",
+              style: TextStyle(),
+            ),
+            content: Text("Are you sure you wish to delete this note?"),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    database.deleteNote(widget.note.id);
+                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text("DELETE")),
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("CANCEL"),
+              ),
+            ],
+          );
+        });
   }
 }

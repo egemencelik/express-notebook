@@ -102,13 +102,22 @@ class _NewNotePageState extends State<NewNotePage> {
 
   void _onAddNote() {
     final database = Provider.of<MyDatabase>(context);
-    _showAlertDialog('text', 'text', context);
-    /* database.addNote(NotesCompanion(
-        title: moor.Value(titleController.text),
-        category: moor.Value(category),
-        content: moor.Value(contentController.text),
-        date: moor.Value(DateTime.now())));
-    Navigator.pop(context); */
+
+    if (titleController.text.isEmpty) {
+      _showAlertDialog(
+          "Title cannot be empty", "Title cannot be empty", context);
+    } else if (titleController.text.length > 32) {
+      _showAlertDialog("Title is too long", "Title is too long", context);
+    } else if (contentController.text.isEmpty) {
+      _showAlertDialog("Note cannot be empty", "Note cannot be empty", context);
+    } else {
+      database.addNote(NotesCompanion(
+          title: moor.Value(titleController.text),
+          category: moor.Value(category),
+          content: moor.Value(contentController.text),
+          date: moor.Value(DateTime.now())));
+      Navigator.pop(context);
+    }
   }
 }
 
@@ -119,27 +128,14 @@ _showAlertDialog(String title, String content, context) {
         return SimpleDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          children: <Widget>[
-            Text(
-              content,
-              style: TextStyle(fontSize: 15),
-            ),
-          ],
+          children: <Widget>[],
           title: Text(
             title,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-          titlePadding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-          /* content: const Text("Are you sure you wish to delete this note?"),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("CANCEL"),
-            ),
-          ], */
+          contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+          titlePadding: EdgeInsets.fromLTRB(10, 35, 10, 30),
         );
       });
 }
