@@ -58,7 +58,7 @@ class _NewNotePageState extends State<NewNotePage> {
                 TextField(
                   controller: contentController,
                   autofocus: true,
-                  maxLines: 34,
+                  maxLines: 25,
                   decoration: InputDecoration.collapsed(
                       hintText: 'What do you want to add now ?'),
                 ),

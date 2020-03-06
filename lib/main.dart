@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:express_notebook/widgets/newnotepage.dart';
 import 'package:express_notebook/widgets/notecard.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -36,6 +37,7 @@ class NoteStream extends ChangeNotifier {
 
 class MyApp extends StatelessWidget {
   static DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm");
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -61,6 +63,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
   static Stream stream;
   static final streamBuilderKey = GlobalKey<State<StreamBuilderBase>>();
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }

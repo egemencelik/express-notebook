@@ -96,7 +96,8 @@ class _NotePageState extends State<NotePage> {
                 TextField(
                   controller: contentController,
                   autofocus: true,
-                  maxLines: 34,
+                  maxLines: 25,
+                  expands: false,
                   decoration:
                       InputDecoration.collapsed(hintText: 'Enter your note...'),
                 ),
