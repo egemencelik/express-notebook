@@ -1,12 +1,8 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
-import 'package:provider/provider.dart';
-import 'package:express_notebook/widgets/notepage.dart';
-import 'package:express_notebook/main.dart';
-
 import 'package:express_notebook/db/database.dart';
+import 'package:express_notebook/widgets/notepage.dart';
+import 'package:flutter/material.dart';
 
 class NoteCard extends StatefulWidget {
   const NoteCard({
@@ -22,7 +18,7 @@ class NoteCard extends StatefulWidget {
   _NoteCardState createState() => _NoteCardState();
 }
 
-class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
+class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin {
   int lines = 3;
   bool expanded = false;
   @override
@@ -41,7 +37,7 @@ class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
                     if (expanded) {
                       lines = 3;
                       expanded = false;
-                      Tween(begin: 2,end: 4);
+                      Tween(begin: 2, end: 4);
                     } else {
                       lines = 25;
                       expanded = true;
@@ -92,6 +88,7 @@ class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
                             ],
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'RobotoMono',
                             fontSize: 15),
                       ),
                       Spacer(),
@@ -132,7 +129,6 @@ class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
                           ),
                         ),
                       ),
-                      
                     ],
                   ),
                 ),
@@ -141,16 +137,17 @@ class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
                 children: <Widget>[
                   Flexible(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(14.0),
                       child: AnimatedSize(
                         vsync: this,
-                        duration: Duration(milliseconds:400),
+                        duration: Duration(milliseconds: 400),
                         curve: Curves.fastLinearToSlowEaseIn,
                         child: Text(
                           widget.note.content,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 15),
+                          style:
+                              TextStyle(fontSize: 15, fontFamily: 'RobotoMono'),
                           maxLines: lines,
                         ),
                       ),
@@ -182,7 +179,8 @@ class _NoteCardState extends State<NoteCard> with TickerProviderStateMixin{
                     child: const Text("DELETE")),
                 FlatButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("CANCEL"),
+                  child: const Text("CANCEL",
+                      style: TextStyle(fontFamily: 'RobotoMono')),
                 ),
               ],
             );

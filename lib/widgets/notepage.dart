@@ -1,11 +1,7 @@
+import 'package:express_notebook/db/database.dart';
 import 'package:express_notebook/widgets/notecard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
-import 'package:express_notebook/widgets/notepage.dart';
-
-import 'package:express_notebook/db/database.dart';
 
 import '../main.dart';
 
@@ -35,6 +31,9 @@ class _NotePageState extends State<NotePage> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
+          style: TextStyle(
+            fontFamily: 'RobotoMono',
+          ),
           controller: titleController,
           decoration:
               InputDecoration.collapsed(hintText: "Enter note title..."),
@@ -80,7 +79,10 @@ class _NotePageState extends State<NotePage> {
                   child: Text(
                     'Last updated: ' +
                         MyApp.dateFormat.format(widget.note.date),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'RobotoMono',
+                    ),
                   ),
                 ),
               ],
@@ -94,6 +96,9 @@ class _NotePageState extends State<NotePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               children: <Widget>[
                 TextField(
+                  style: TextStyle(
+                    fontFamily: 'RobotoMono',
+                  ),
                   controller: contentController,
                   autofocus: true,
                   maxLines: 25,

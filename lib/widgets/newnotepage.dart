@@ -1,11 +1,8 @@
+import 'package:express_notebook/db/database.dart';
 import 'package:express_notebook/widgets/notecard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
-import 'package:express_notebook/widgets/notepage.dart';
-
-import 'package:express_notebook/db/database.dart';
 
 class NewNotePage extends StatefulWidget {
   @override
@@ -23,6 +20,9 @@ class _NewNotePageState extends State<NewNotePage> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
+          style: TextStyle(
+            fontFamily: 'RobotoMono',
+          ),
           controller: titleController,
           decoration: InputDecoration.collapsed(hintText: "Enter note title"),
         ),
@@ -57,6 +57,9 @@ class _NewNotePageState extends State<NewNotePage> {
               children: <Widget>[
                 TextField(
                   controller: contentController,
+                  style: TextStyle(
+                    fontFamily: 'RobotoMono',
+                  ),
                   autofocus: true,
                   maxLines: 25,
                   decoration: InputDecoration.collapsed(
